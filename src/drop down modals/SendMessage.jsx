@@ -25,9 +25,10 @@ function SendMessage() {
   const [messageFormData, setMessageFormData] = useState({
     from: '',
     msg: '',
+    name: '',
   })
 
-  const { from, msg } = messageFormData
+  const { from, msg, name } = messageFormData
 
   const handleCloseModal = () => {
     dispatch({ type: 'TOGGLE_SEND_MSG_MODAL', payload: false })
@@ -60,6 +61,11 @@ function SendMessage() {
     const itemName = item
     const selectTagElement = document.querySelectorAll('.testing')
     selectTagElement.forEach((node) => {
+      // set name of sender programmatically
+      setMessageFormData((prevState) => ({
+        ...prevState,
+        name: node.dataset.name,
+      }))
       if (node.dataset.name === itemName) {
         setAgentId(node.dataset.id)
         console.log(node.dataset.id)
@@ -75,16 +81,17 @@ function SendMessage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    // works by fetching recipients data and pushing message onto the messages array
     const initialData = await getUserForSendMessagePush('users', agentId)
-    const agentData = initialData[0].data
+
+    const agentData = initialData[0]?.data
 
     const newMessageData = {
       ...agentData,
     }
 
     //  prettier-ignore
-    newMessageData.messages.push({ from, msg, dateAndTime, id: crypto.randomUUID()});
-    console.log(newMessageData)
+    newMessageData.messages.push({ from, msg, dateAndTime, id: crypto.randomUUID() })
     //  prettier-ignore-end
 
     const washingtonRef = doc(db, 'users', agentId)
@@ -99,6 +106,7 @@ function SendMessage() {
     )
     console.log(getUpdatedAgentArray[0].data)
     const messageLength = getUpdatedAgentArray[0].data.messages.length
+
     const updatedData = {
       ...getUpdatedAgentArray,
       msgLength: messageLength,
@@ -148,7 +156,8 @@ function SendMessage() {
             id="from"
             placeholder="Msg from"
             onChange={onMutate}
-            value={from}
+            value={name}
+            disabled={true}
           />
 
           <textarea

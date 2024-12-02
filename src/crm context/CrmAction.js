@@ -575,6 +575,7 @@ export async function getUserForSendMessagePush(collectionName, params) {
       })
     })
 
+    console.log(users)
     return users
   } catch (error) {
     console.log(error)

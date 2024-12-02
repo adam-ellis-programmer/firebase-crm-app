@@ -35,7 +35,7 @@ function Profile() {
 
     const fetchAllData = async () => {
       try {
-        // setLoading(true) // Start the loader
+        setLoading(true) // Start the loader
 
         // Run all the async functions in parallel
         const [emailsData, ordersData, notesData] = await Promise.all([

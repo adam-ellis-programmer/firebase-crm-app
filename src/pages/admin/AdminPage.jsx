@@ -21,6 +21,7 @@ function AdminPage() {
     signUp: false,
     delete: false,
   })
+
   const [disabledStates, setDisabledStates] = useState({
     populate: true,
     addModify: true,
@@ -59,6 +60,7 @@ function AdminPage() {
     name: '',
     email: '',
     password: '',
+    userReportsTo: 'none chosen',
   })
 
   const [deleteAgentData, setDeleteAgentData] = useState({
@@ -66,7 +68,7 @@ function AdminPage() {
   })
 
   const { adminEmail, admin, manager, ceo, sales, reportsTo } = permissions
-  const { name, email, password } = newAgentData
+  const { name, email, password, userReportsTo } = newAgentData
   const { agentEmailToDelete } = deleteAgentData
 
   // helper function to manage loading state
@@ -148,16 +150,6 @@ function AdminPage() {
   // Add this useEffect to handle adminEmail changes
   // onMutate function doesn't trigger immediately upon pasting
   // explicitly monitor changes to the adminEmail field and set the button state accordingly
-  useEffect(() => {
-    if (adminEmail.length > 5) {
-      console.log('hello')
-      handleButtonDisabling(false, 'populate')
-      handleButtonDisabling(false, 'addModify')
-    } else {
-      handleButtonDisabling(true, 'populate')
-      handleButtonDisabling(true, 'addModify')
-    }
-  }, [adminEmail]) // This will monitor changes to adminEmail.
 
   const onSignUpChange = (e) => {
     setNewAgentData((prevState) => ({
@@ -168,6 +160,8 @@ function AdminPage() {
 
   const onAddNewAgent = async (e) => {
     e.preventDefault()
+
+    console.log('clicked .....')
     handleButtonLoading(true, 'signUp')
 
     const agentId = `AG-${name.toUpperCase().slice(0, 4)}-${crypto
@@ -194,11 +188,13 @@ function AdminPage() {
       const newAgentObj = {
         name: userRecord.data.data.displayName,
         email: userRecord.data.data.email,
-        agentUId: agentOrigUid,
+        agentUid: agentOrigUid,
         timestamp: serverTimestamp(),
         agentId,
         tasksLength: 0,
         msgLength: 0,
+        messages: [],
+        reportsTo: userReportsTo,
         salesTeamIds: [],
       }
 
@@ -206,7 +202,7 @@ function AdminPage() {
       console.log(data)
 
       const getUpdatedData = await getListOfAgentsForAdminPage('users')
-      console.log(getUpdatedData)
+
       setAgentData(getUpdatedData)
       resetNewAgentData()
     } catch (error) {
@@ -234,7 +230,8 @@ function AdminPage() {
       email: agentEmailToDelete,
     })
       .then((user) => {
-        console.log(user.data.userData)
+        // console.log(user.data.userData)
+        // console.log(user)
         setDeleteData(user.data.userData)
         deleteDoc(doc(db, 'users', user.data.userData.uid))
         const updatedDomData = agentData.filter(
@@ -305,6 +302,16 @@ function AdminPage() {
       reportsTo: value,
     }))
   }
+  const handleSelectChangeAdmin = (e) => {
+    // value is an object -> parsed
+    const value =
+      e.target.value === 'none chosen' ? 'none chosen' : JSON.parse(e.target.value)
+
+    setNewAgentData((prevState) => ({
+      ...prevState,
+      userReportsTo: value,
+    }))
+  }
 
   const handlePopulate = async (e) => {
     e.preventDefault()
@@ -315,19 +322,19 @@ function AdminPage() {
     try {
       const res = await getUser({ email: adminEmail })
       const userClaims = res.data.customClaims
-      console.log(userClaims)
+
       setPermissions((prevState) => ({
         ...prevState,
-        admin: userClaims.admin || false,
-        manager: userClaims.manager || false,
-        ceo: userClaims.ceo || false,
-        sales: userClaims.sales || false,
-        reportsTo: userClaims.reportsTo ? userClaims.reportsTo : 'none chosen',
+        admin: userClaims?.admin || false,
+        manager: userClaims?.manager || false,
+        ceo: userClaims?.ceo || false,
+        sales: userClaims?.sales || false,
+        reportsTo: userClaims?.reportsTo ? userClaims.reportsTo : 'none chosen',
       }))
 
       setOldReportsTO({
-        id: userClaims.reportsTo.id,
-        name: userClaims.reportsTo.name,
+        id: userClaims?.reportsTo.id,
+        name: userClaims?.reportsTo.name,
       })
     } catch (error) {
       console.log(error)
@@ -336,33 +343,81 @@ function AdminPage() {
 
   // ** firebase batch updates ** //
   // funciton to change the id of the 'reports to' which changes the manager
+  //::-->  atomic batch transaction
   async function batchChanges(newReportsToData) {
     try {
       const newID = newReportsToData.id
       const newName = newReportsToData.name
       const oldID = oldReportsTO.id
 
-      // console.log(newID, oldID)
-
       const batch = writeBatch(db)
-      const q = query(collection(db, 'customers'), where('reportsTo.id', '==', oldID))
 
-      const querySnapshot = await getDocs(q)
+      // Query for the `customers` collection
+      const customersQuery = query(
+        collection(db, 'customers'),
+        where('reportsTo.id', '==', oldID)
+      )
+      const customersQuerySnapshot = await getDocs(customersQuery)
 
-      querySnapshot.forEach((document) => {
-        console.log(document.data())
+      // Update the `customers` collection
+      customersQuerySnapshot.forEach((document) => {
         batch.update(document.ref, {
           'reportsTo.id': newID,
           'reportsTo.name': newName,
         })
       })
 
+      // Query for the `users` collection
+      const usersQuery = query(
+        collection(db, 'users'),
+        where('reportsTo.id', '==', oldID)
+      )
+      const usersQuerySnapshot = await getDocs(usersQuery)
+
+      // Update the `users` collection
+      usersQuerySnapshot.forEach((document) => {
+        batch.update(document.ref, {
+          'reportsTo.id': newID,
+          'reportsTo.name': newName,
+        })
+      })
+
+      // Commit all changes in the batch
       await batch.commit()
       console.log('Batch update committed successfully')
     } catch (error) {
-      console.log(error)
+      console.error('Error during batch update:', error)
     }
   }
+
+  // **** handle disable buttons *** //
+  useEffect(() => {
+    if (adminEmail.length > 5) {
+      console.log('hello')
+      handleButtonDisabling(false, 'populate')
+      handleButtonDisabling(false, 'addModify')
+    } else {
+      handleButtonDisabling(true, 'populate')
+      handleButtonDisabling(true, 'addModify')
+    }
+  }, [adminEmail]) // This will monitor changes to adminEmail.
+
+  useEffect(() => {
+    // Enable the button only if the `name` field is not empty
+    if (name.trim() !== '') {
+      handleButtonDisabling(false, 'newAgent')
+    } else {
+      handleButtonDisabling(true, 'newAgent')
+    }
+  }, [name]) // Monitor changes to the `name` field
+
+  useEffect(() => {
+    if (agentEmailToDelete.trim() !== '') {
+      handleButtonDisabling(false, 'delete')
+    } else {
+      handleButtonDisabling(true, 'delete')
+    }
+  }, [agentEmailToDelete]) // Monitor changes to the `name` field
 
   return (
     <div>
@@ -525,8 +580,33 @@ function AdminPage() {
                 value={password}
                 autoComplete="true"
               />
+              {/* add in reports to select box */}
+
+              <div className="reports-to-div">
+                <label className="reports-to-label" htmlFor="reportsTo">
+                  Reports To
+                </label>
+                <select
+                  onChange={handleSelectChangeAdmin}
+                  className="manager-select"
+                  name=""
+                  id="userReportsTo"
+                  value={JSON.stringify(userReportsTo)}
+                >
+                  <option value="none chosen">Please select</option>
+                  {managers &&
+                    managers.map((item, i) => (
+                      <option
+                        key={i}
+                        value={JSON.stringify({ name: item.displayName, id: item.uid })}
+                      >
+                        {item.displayName}
+                      </option>
+                    ))}
+                </select>
+              </div>
               <button
-                disabled={loadingStates.signUp}
+                disabled={loadingStates.signUp || disabledStates.newAgent}
                 className={`sign-up-agent-button ${
                   loadingStates.signUp && 'button-loading'
                 }`}
@@ -549,12 +629,12 @@ function AdminPage() {
                 value={agentEmailToDelete}
               />
               <button
-                disabled={loadingStates.delete}
+                disabled={loadingStates.delete || disabledStates.delete}
                 className={`modify-agent-button delete-agent ${
                   loadingStates.delete && 'button-loading'
                 }`}
               >
-                {loadingStates.delete ? 'Loading...' : 'Delete User'}
+                {loadingStates.delete ? 'deleting...' : 'Delete User'}
               </button>
             </form>
           </div>

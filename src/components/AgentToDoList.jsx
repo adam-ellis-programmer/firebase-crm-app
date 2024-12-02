@@ -38,7 +38,7 @@ function AgentToDoList() {
       )
       setTasks(data)
       setLoading(false)
-      setTasksLength(agentData[0]?.data?.taskLength)
+      setTasksLength(agentData[0]?.data?.taskLength || 0)
     }
     getTaskListItems()
 

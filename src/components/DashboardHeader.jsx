@@ -75,7 +75,7 @@ function DashboardHeader() {
             }
           >
             {readMessageModal ? 'Close Messages' : 'View Messages'}
-            <span className="messages-number">{messageCounter}</span>
+            <span className="messages-number">{messageCounter || 0}</span>
           </button>
         </div>
         {sendMessageModal && <SendMessage />}
