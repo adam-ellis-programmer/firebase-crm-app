@@ -14,6 +14,23 @@
   --speed: 500ms;
   --svg-color: #ff0000;
 }
+
+
+/* @media (prefers-color-scheme: light) {
+  input[type='checkbox'] {
+    background-color: white;
+    border: 2px solid #ccc;
+  }
+}
+
+
+@media (prefers-color-scheme: dark) {
+  input[type='checkbox'] {
+    background-color: black;
+    border: 2px solid #666;
+  }
+} */
+
 body {
   font-family: 'Raleway', sans-serif;
   /* font-optical-sizing: auto; */
@@ -24,10 +41,41 @@ body {
 
 code {
 }
+/* Ensure the background is always white */
+input[type='checkbox'] {
+  background-color: white;
+  border: 2px solid #ccc; /* Optional: to make the border visible */
+  width: 20px; /* Customize size */
+  height: 20px;
+  appearance: none; /* Remove default styling */
+  cursor: pointer;
+}
 
+/* Checked state */
+input[type='checkbox']:checked {
+  background-color: white; /* Force white background */
+  background-color: #fff;
+  background-color: #4caf50; /* Optional: green border for checked state */
+}
+
+/* Add hover effect */
+input[type='checkbox']:hover {
+  border-color: #4caf50;
+}
+
+textarea,
+select,
+input {
+  background-color: #fff;
+}
 .customer-box {
   /* border: 1px solid; */
   /* min-height: 70vh; */
+  background: #fff;
+}
+
+.main {
+  background-color: #fff;
 }
 
 .main-wrap {
@@ -235,6 +283,7 @@ code {
   width: 95%;
   /* border: 1px solid;  */
   margin: auto;
+  background-color: #fff;
 }
 
 .page-header {
