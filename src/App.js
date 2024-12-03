@@ -21,6 +21,7 @@ import AdminPage from './pages/admin/AdminPage'
 import AgentSignIn from './pages/AgentSignIn'
 import { useEffect } from 'react'
 import DataAll from './pages/DataAll'
+import NotFound from './pages/NotFound'
 
 // PROTECT THE ROUTES
 function App() {
@@ -33,29 +34,28 @@ function App() {
           <div className="main">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/data/:uid" element={<Data />} />
-              <Route path="/all-data/:uid" element={<DataAll />} />
               <Route path="/sign-in" element={<Signin />} />
-              <Route path="/admin/:uid" element={<AdminPage />} />
               <Route path="/agent-sign-in" element={<AgentSignIn />} />
               <Route path="/sign-up" element={<Signup />} />
-              {/* <Route path="/sign-out" element={<Signout />} /> */}
-              <Route path="/stats/:uid" element={<Stats />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/new-customer" element={<NewCustomer />} />
-              <Route
-                path="/single-customer/:agentUid/:uid/:name"
-                element={<SingleCustomer />}
-              />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
 
-              <Route path="/profile/:uid" element={<PrivateRoute />}>
+              {/* protected routes */}
+              <Route element={<PrivateRoute />}>
+                <Route path="/data/:uid" element={<Data />} />
+                <Route path="/all-data/:uid" element={<DataAll />} />
+                <Route path="/admin/:uid" element={<AdminPage />} />
+                <Route path="/stats/:uid" element={<Stats />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/new-customer" element={<NewCustomer />} />
+                <Route
+                  path="/single-customer/:agentUid/:uid/:name"
+                  element={<SingleCustomer />}
+                />
                 <Route path="/profile/:uid" element={<Profile />} />
               </Route>
-
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              {/* todo not found page */}
+              {/* <Route path="/sign-out" element={<Signout />} /> */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
-            {/* todo make sure all routes are proteced where needed */}
           </div>
         </Router>
         <Footer />

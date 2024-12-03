@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from 'react'
 import { useSearchParams, useHistory } from 'react-router-dom'
 import { ReactComponent as EditIcon } from '../icons/edit-icon.svg'
 
-import { useParams, Link, useNavigate, useLocation } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import CrmContext from '../crm context/CrmContext'
 import {
   getCollection,
@@ -20,18 +20,19 @@ import { getAuth } from 'firebase/auth'
 import { toast } from 'react-toastify'
 import DataSvgIcon from './DataSvgIcon'
 
+// for testing
 // const {history} = useHistory();
 
 function DisplayOrders() {
   const auth = getAuth()
+  // leave for testing
   const navigate = useNavigate()
   const location = useLocation()
   const searchParamsTest = new URLSearchParams()
 
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const { dispatch, totalAmountSpent, editPurchase, ordersData, customerStats } =
-    useContext(CrmContext)
+  const { dispatch, totalAmountSpent, editPurchase, ordersData } = useContext(CrmContext)
 
   const [customerId, setcustomerId] = useState(null)
   const [initCustId, setInitCustId] = useState('')
@@ -80,17 +81,17 @@ function DisplayOrders() {
   // 4: on delete and on edit make reqest to update
   const onDelete = async (id) => {
     try {
-      // Filter out the order to be deleted
+      // Filter out the order to be deleted for dom
       const updatedData = ordersData.filter((item) => item.id !== id)
+      // get item to be deleted for the price info
       const deletedItem = ordersData.find((item) => item.id === id)
-
       // Get the price of the deleted order
       const deletedPrice = deletedItem.data.price
 
       // Dispatch to update the UI
       dispatch({ type: 'ORDERS', payload: updatedData })
 
-      // Update the total amount spent
+      // Update the total amount spent using filtered item
       const newTotalAmountSpent = updatedData.reduce((value, item) => {
         return value + parseInt(item.data.price)
       }, 0)
@@ -101,7 +102,7 @@ function DisplayOrders() {
         goldCustomer = false
       }
 
-      // Dispatch to update the total amount spent and the number of orders
+      // Dispatch to update the total amount spent and the number of orders for dom
       dispatch({ type: 'SET_TOTAL_AMOUNT_SPENT', payload: newTotalAmountSpent })
       dispatch({ type: 'ORDERS_LENGTH', payload: updatedData.length })
 
@@ -130,7 +131,7 @@ function DisplayOrders() {
       // Delete the actual order document from the database
       await deleteDoc(doc(db, 'orders', id))
 
-      // to do update the state: -->
+      // update the state
       dispatch({ type: 'SET_STATS', payload: updatedStats })
 
       toast.success('Order deleted successfully')
@@ -189,16 +190,9 @@ function DisplayOrders() {
       // this getStatsObj to get the  UID index to update the document with
       const getStatsObj = await getStatsObjToEdit('stats', initCustId)
 
-      console.log(initCustId)
-      console.log(getStatsObj)
-
-      // return
-
       const statsID = getStatsObj[0].id
 
       let sum = totalAmountSpent + parseInt(price)
-      console.log(sum)
-      // return
 
       let points = 0
       let goldCustomer = false
@@ -221,9 +215,7 @@ function DisplayOrders() {
         rating: ratingAmount,
       }
 
-      console.log(updatedStats)
-
-      // sum up batch updates
+      // sum up batch updates for dom
       dispatch({ type: 'ORDERS', payload: data })
       dispatch({
         type: 'SET_TOTAL_AMOUNT_SPENT',
@@ -231,20 +223,14 @@ function DisplayOrders() {
       })
       dispatch({ type: 'ORDERS_LENGTH', payload: data.length })
 
-      const sendUpdatedStatsData = await updateCustomerStats(
-        'stats',
-        statsID,
-        updatedStats
-      )
-      console.log(sendUpdatedStatsData)
-      const getUpdStatsObj = await getStatsObjToEdit('stats', initCustId)
-      console.log(getUpdStatsObj)
-      console.log(getUpdStatsObj[0].data)
-      // return
+      await updateCustomerStats('stats', statsID, updatedStats)
 
-      // set the global state
+      const getUpdStatsObj = await getStatsObjToEdit('stats', initCustId)
+
+      // update the dom
       dispatch({ type: 'SET_STATS', payload: getUpdStatsObj[0].data })
 
+      // reset form data
       setFormData({
         item: '',
         price: '',

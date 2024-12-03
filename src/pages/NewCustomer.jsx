@@ -6,9 +6,9 @@ import { Navigate, useNavigate, useSearchParams, useParams } from 'react-router-
 import NewSignupForm from '../components/forms/NewSignupForm'
 
 function NewCustomer() {
-  const [searchParams, setSetSearchParams] = useSearchParams()
-  // console.log(searchParams.get('agentName'))
   const { loggedIn, checkingStatus, claims } = useAuthStatusTwo()
+  // const [searchParams, setSetSearchParams] = useSearchParams()
+  // console.log(searchParams.get('agentName'))
   // console.log(claims)
   const auth = getAuth()
 

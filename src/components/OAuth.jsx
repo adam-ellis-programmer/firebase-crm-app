@@ -1,3 +1,4 @@
+// not currently in-use in this project
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'

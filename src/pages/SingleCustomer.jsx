@@ -4,8 +4,6 @@ import { getDoc, doc } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 import { db } from '../firebase.config'
 
-import Spinner from '../components/Spinner'
-import { toast } from 'react-toastify'
 import DisplayCustomerData from '../components/DisplayCustomerData'
 import DisplayOrders from '../components/DisplayOrders'
 import DisplayNotes from '../components/DisplayNotes'
@@ -16,14 +14,11 @@ import OrdersSumUp from '../components/OrdersSumUp'
 import OrderEdit from '../drop down modals/OrderEdit'
 import NoteEdit from '../drop down modals/NoteEdit'
 import SendEmail from '../drop down modals/SendEmail'
-import { addMsgToDatabase } from '../crm context/CrmAction'
+
 import ProgressBar from '../components/ProgressBar'
 import DetailsPageStats from '../components/DetailsPageStats'
 import Loader from '../assets/Loader'
-// CONVERT NUMBERS INTO MONEY FUNCTION
-// CONVERT NUMBERS INTO MONEY FUNCTION
-// CONVERT NUMBERS INTO MONEY FUNCTION
-// CONVERT NUMBERS INTO MONEY FUNCTION
+
 function SingleCustomer() {
   const { deleteBtn, editPurchase, editNote, toggleEmail, ordersLength, notesLength } =
     useContext(CrmContext)
@@ -32,22 +27,27 @@ function SingleCustomer() {
 
   const [customer, setCustomer] = useState(null)
   const [testing, setTesting] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [shareLinkCopied, setShareLinkCopied] = useState(false)
   const navigate = useNavigate()
   const params = useParams()
-  // console.log(params.agentUid);
+
   const auth = getAuth()
-  // console.log(auth)
 
   useEffect(() => {
     const fetchData = async () => {
-      const docRef = doc(db, 'customers', params.uid)
-      const docSnap = await getDoc(docRef)
-      // check if document exists
-      if (docSnap.exists()) {
-        // console.log(docSnap.data());
-        setCustomer(docSnap.data())
+      try {
+        const docRef = doc(db, 'customers', params.uid)
+        const docSnap = await getDoc(docRef)
+        // check if document exists
+        if (docSnap.exists()) {
+          // console.log(docSnap.data());
+          setCustomer(docSnap.data())
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -68,12 +68,11 @@ function SingleCustomer() {
       navigate(`/data/${params.uid}`)
     }
   })
-  // console.log(customer?.urlData.url)
 
   if (loading) {
     return <Loader />
   }
-
+  console.log(customer)
   return (
     <>
       <ProgressBar />

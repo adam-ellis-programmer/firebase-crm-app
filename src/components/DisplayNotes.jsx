@@ -1,9 +1,9 @@
 import { useEffect, useState, useContext } from 'react'
 import CrmContext from '../crm context/CrmContext'
-import { useParams, Link, useSearchParams } from 'react-router-dom'
-import { serverTimestamp, addDoc } from 'firebase/firestore'
+import { useParams, useSearchParams } from 'react-router-dom'
+import { serverTimestamp } from 'firebase/firestore'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { getDoc, doc, deleteDoc, startAfter } from 'firebase/firestore'
+import { getDoc, doc, deleteDoc } from 'firebase/firestore'
 import { db } from '../firebase.config'
 import { ReactComponent as EditIcon } from '../icons/edit-icon.svg'
 

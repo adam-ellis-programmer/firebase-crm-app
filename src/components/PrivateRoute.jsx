@@ -9,7 +9,7 @@ function PrivateRoute() {
     return ''
   }
 
-  return loggedIn ? <Outlet /> : <Navigate to="/sign-in" />
+  return loggedIn ? <Outlet /> : <Navigate to="/agent-sign-in" />
 }
 
 export default PrivateRoute

@@ -1,3 +1,5 @@
+// firebase signin is not in-use in this project
+
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import visibilityIcon from '../icons/svg/visibilityIcon.svg'

@@ -1,7 +1,6 @@
-import { useEffect, useContext, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   getAllCustomersForProfilePageCompanyStats,
-  calculateCompanyTotals,
   sumByCompany,
 } from '../crm context/CrmAction'
 function DisplayCompanySumUp() {
@@ -23,10 +22,6 @@ function DisplayCompanySumUp() {
         return b.amount - a.amount
       })
       .slice(0, 3)
-  // console.log(sortedArray)
-
-  // MAYBE USE A BATCH FUNCTION
-  // TO UPDATE THE DATA IN ALL AREAS
 
   if (sortedArray && sortedArray.length === 0) {
     return (

@@ -42,7 +42,6 @@ function AgentLogInForm() {
       if (userCredentials.user) {
         console.log(userCredentials.user.uid)
         navigate(`/data/${userCredentials.user.uid}`)
-        // change nava button to log out
       }
     } catch (error) {
       toast.error('Invalid User Credentials')

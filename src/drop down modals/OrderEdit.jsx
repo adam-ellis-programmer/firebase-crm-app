@@ -2,11 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import CrmContext from '../crm context/CrmContext'
 import { useSearchParams, useParams } from 'react-router-dom'
 import { getDocument, submitUpdatedDocument } from '../crm context/CrmAction'
-import {
-  getCollection,
-  getOrdersAfterEdit,
-  updateCustomerStats,
-} from '../crm context/CrmAction'
+import { getOrdersAfterEdit, updateCustomerStats } from '../crm context/CrmAction'
 import { getPointsEarned1, getRating } from '../CrmFunctions'
 
 function OrderEdit() {
@@ -74,7 +70,6 @@ function OrderEdit() {
       }, 0)
 
       updateStats(value)
-      console.log(value)
 
       dispatch({ type: 'SET_TOTAL_AMOUNT_SPENT', payload: value })
       dispatch({ type: 'TOGGLE_EDIT_PURCHASE', payload: false })

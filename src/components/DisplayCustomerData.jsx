@@ -1,56 +1,29 @@
-import { useEffect, useState, useContext } from 'react'
+import { useState, useContext } from 'react'
 import CrmContext from '../crm context/CrmContext'
-import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
-import { getDoc, doc } from 'firebase/firestore'
-import { getAuth } from 'firebase/auth' // only show if it's that agents listing
-import { db } from '../firebase.config'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
+
+import { getAuth } from 'firebase/auth' // only show if it's that agent's listing
 import { onSubmit } from '../crm context/CrmAction'
 import { MapContainer, TileLayer, useMap, Marker, Popup } from 'react-leaflet'
 
-import Spinner from '../components/Spinner'
-import { toast } from 'react-toastify'
 import ProfileControlButtons from './ProfileControlButtons'
-import UpdateReportToData from './forms/UpdateReportToData'
-function DisplayCustomerData({ setCustomer, customer }) {
-  const { dispatch, changeDetails, nameAndPhoneNumber } = useContext(CrmContext)
+
+function DisplayCustomerData({ customer }) {
+  const { changeDetails } = useContext(CrmContext)
 
   const location = useLocation()
 
   const [data, setData] = useState({
-    name: '',
-    phone: '',
-    fullData: [],
+    name: customer.name,
+    phone: customer.email,
+    fullData: customer,
   })
-
-  const { name, phone, fullData } = data
+  //
+  const { name, phone } = data
 
   const params = useParams()
   const navigate = useNavigate()
   const auth = getAuth()
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const docRef = doc(db, 'customers', params.uid)
-
-      const docSnap = await getDoc(docRef)
-      dispatch({
-        type: 'CHANGE_INFO',
-        name: docSnap.data().name,
-        phone: docSnap.data().phone,
-      })
-
-      if (docSnap.exists()) {
-        setData((prevState) => ({
-          ...prevState,
-          name: docSnap.data().name,
-          phone: docSnap.data().phone,
-          fullData: docSnap.data(),
-        }))
-      }
-    }
-
-    fetchData()
-  }, [navigate, params.uid])
 
   const onChange = (e) => {
     setData((prevState) => ({
@@ -60,6 +33,7 @@ function DisplayCustomerData({ setCustomer, customer }) {
   }
 
   try {
+    // if change details true
     changeDetails && onSubmit(params.uid, name, phone)
   } catch (error) {
     console.log(error)
@@ -95,29 +69,27 @@ function DisplayCustomerData({ setCustomer, customer }) {
       <div className="customer-details">
         <div className="customer-details-container">
           <p className="profile-extra-info">
-            Cust ID <span>{data.fullData.custId} </span>{' '}
+            Cust ID <span>{customer.custId} </span>{' '}
           </p>
           <p className="profile-extra-info">
-            Email <span>{data.fullData.email} </span>
+            Email <span>{customer.email} </span>
           </p>
           <p className="profile-extra-info">
-            Date Of Signup <span>{data.fullData.dateOfSignUp} </span>
+            Date Of Signup <span>{customer.dateOfSignUp} </span>
           </p>
           <p className="profile-extra-info">
-            Sign Up Agent 
-            <span>
-              {data.fullData.signUpagent ? data.fullData.signUpagent : 'System'}
-            </span>
+            Sign Up Agent
+            <span>{customer.signUpagent ? customer.signUpagent : 'System'}</span>
           </p>
           <p className="profile-extra-info">
             Company
-            <span>{data.fullData.company}</span>
+            <span>{customer.company}</span>
           </p>
           {/* prettier-ignore */}
           <p className="profile-extra-info profile-formatedAddress">
             Address
             <span>
-              {data.fullData.signUpagent ? data.fullData.formattedAddress : 'System'}
+              {customer.signUpagent ? customer.formattedAddress : 'System'}
             </span>
           </p>
           <p className="profile-extra-info">
@@ -126,11 +98,11 @@ function DisplayCustomerData({ setCustomer, customer }) {
           </p>
           <p className="profile-extra-info">
             agent reports to
-            <span>{data.fullData.reportsTo.name}</span>
+            <span>{customer.reportsTo.name}</span>
           </p>
         </div>
 
-    
+        {/* to be tested and completed */}
         {/* <UpdateReportToData /> */}
         <ProfileControlButtons />
       </div>
@@ -142,7 +114,7 @@ function DisplayCustomerData({ setCustomer, customer }) {
             width: '100%',
             borderRadius: '2em',
           }}
-          center={[data.fullData.geoLocation.lat, data.fullData.geoLocation.lng]}
+          center={[customer.geoLocation.lat, customer.geoLocation.lng]}
           zoom={14}
           scrollWheelZoom={true}
         >
@@ -150,9 +122,7 @@ function DisplayCustomerData({ setCustomer, customer }) {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          <Marker
-            position={[data.fullData.geoLocation.lat, data.fullData.geoLocation.lng]}
-          >
+          <Marker position={[customer.geoLocation.lat, customer.geoLocation.lng]}>
             <Popup>
               <div
                 className="box"

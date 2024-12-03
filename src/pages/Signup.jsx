@@ -1,35 +1,33 @@
-import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import visibilityIcon from '../icons/svg/visibilityIcon.svg';
-import { ReactComponent as ArrowRightIcon } from '../icons/svg/keyboardArrowRightIcon.svg';
-import { toast } from 'react-toastify';
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from 'firebase/auth';
+// firebase auth not in use in this project
 
-import { setDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { NavLink, Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import visibilityIcon from '../icons/svg/visibilityIcon.svg'
+import { ReactComponent as ArrowRightIcon } from '../icons/svg/keyboardArrowRightIcon.svg'
+import { toast } from 'react-toastify'
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 
-import { db } from '../firebase.config';
-import OAuth from '../components/OAuth';
+import { setDoc, doc, serverTimestamp } from 'firebase/firestore'
+
+import { db } from '../firebase.config'
+import OAuth from '../components/OAuth'
 
 function Signup() {
   // component level state
-  const [showPassword, setshowPassword] = useState(false);
+  const [showPassword, setshowPassword] = useState(false)
   const [formData, setformData] = useState({
     name: '',
     email: '',
     password: '',
-  });
+  })
   // destructured so can use globaly
-  const { name, password, email } = formData;
+  const { name, password, email } = formData
   const agentId = `AG-${name.toUpperCase().slice(0, 4)}-${crypto
     .randomUUID()
     .toUpperCase()
-    .slice(0, 4)}`;
+    .slice(0, 4)}`
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const onChange = (e) => {
     // id has to be the same as what it is called in the formData function above
@@ -37,41 +35,37 @@ function Signup() {
     setformData((prevState) => ({
       ...prevState,
       [e.target.id]: e.target.value,
-    }));
-  };
+    }))
+  }
 
   const onSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     try {
-      const auth = getAuth();
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const auth = getAuth()
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       // id is generated in the credentials when the user first signs up
-      const user = userCredential.user;
+      const user = userCredential.user
       console.log(user)
       updateProfile(auth.currentUser, {
         displayName: name,
-      });
+      })
 
-      const formDataCopy = { ...formData };
-      delete formDataCopy.password;
-      formDataCopy.timestamp = serverTimestamp();
-      formDataCopy.agentId = agentId;
-      formDataCopy.agentUID = user.uid;
-      console.log(formDataCopy) 
+      const formDataCopy = { ...formData }
+      delete formDataCopy.password
+      formDataCopy.timestamp = serverTimestamp()
+      formDataCopy.agentId = agentId
+      formDataCopy.agentUID = user.uid
+      console.log(formDataCopy)
       // settig the document to the id of the initial id the customer was given at sign up
-      await setDoc(doc(db, 'users', user.uid), formDataCopy); // second argument is the actual data
-      
-      navigate('/');
+      await setDoc(doc(db, 'users', user.uid), formDataCopy) // second argument is the actual data
+
+      navigate('/')
     } catch (error) {
-      console.log(error);
-      toast.error('Somthing went wrong with registration');
+      console.log(error)
+      toast.error('Somthing went wrong with registration')
     }
-  };
+  }
 
   return (
     <>
@@ -136,7 +130,7 @@ function Signup() {
         </main>
       </div>
     </>
-  );
+  )
 }
 
-export default Signup;
+export default Signup

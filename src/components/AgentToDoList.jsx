@@ -20,12 +20,12 @@ import Spinner from './Spinner'
 
 function AgentToDoList() {
   const auth = getAuth()
-  const { dispatch, completedTask } = useContext(CrmContext)
+
   const [loading, setLoading] = useState(true)
   const chars = 300
   const [tasksLength, setTasksLength] = useState(0)
   const [agentName, setAgentName] = useState('')
-  const [wordCount, setWordCount] = useState('')
+
   const params = useParams()
   const [tasks, setTasks] = useState(null)
 
@@ -87,7 +87,6 @@ function AgentToDoList() {
       taskText: e.target.value,
       taskLength: e.target.value.length,
     }))
-    // setWordCount(taskText.length);
   }
 
   const handleSubmit = async (e) => {

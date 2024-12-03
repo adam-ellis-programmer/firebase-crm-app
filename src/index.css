@@ -15,7 +15,6 @@
   --svg-color: #ff0000;
 }
 
-
 /* @media (prefers-color-scheme: light) {
   input[type='checkbox'] {
     background-color: white;
@@ -3021,3 +3020,36 @@ td {
   background-color: #026e81;
 }
 /* ================  DETAILS STATS WRAP ============= */
+
+.not-found-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 60px);
+}
+
+.not-found-div {
+  display: flex;
+  flex-direction: column;
+}
+.not-found-div p {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.not-found-btn {
+  margin: 3rem auto;
+  font-size: 1.2rem;
+  text-align: center;
+  background-color: #d94f04;
+  color: #fff;
+  padding: 1rem;
+  width: 200px;
+  display: block;
+  border-radius: 8px;
+}
+
+.not-found-img {
+  max-width: 400px;
+}

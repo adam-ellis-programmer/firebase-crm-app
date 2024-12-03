@@ -9,7 +9,7 @@ export const useAuthStatusOne = () => {
     const auth = getAuth()
 
     onAuthStateChanged(auth, (user) => {
-      // console.log(user)
+
       if (user) {
         setLoggedIn(true)
       }

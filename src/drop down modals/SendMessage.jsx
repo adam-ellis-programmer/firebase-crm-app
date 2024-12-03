@@ -81,7 +81,7 @@ function SendMessage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // works by fetching recipients data and pushing message onto the messages array
+    // fetch the recipients data and pushing message onto the messages array
     const initialData = await getUserForSendMessagePush('users', agentId)
 
     const agentData = initialData[0]?.data
@@ -104,7 +104,7 @@ function SendMessage() {
       'users',
       agentId
     )
-    console.log(getUpdatedAgentArray[0].data)
+
     const messageLength = getUpdatedAgentArray[0].data.messages.length
 
     const updatedData = {

@@ -7,7 +7,7 @@ import CrmContext from '../crm context/CrmContext'
 
 function OrdersSumUp() {
   const { totalAmountSpent, dispatch } = useContext(CrmContext)
-  const [amountSpent, setAmountSpent] = useState(0)
+
   const [orders, setOrders] = useState(null)
   const params = useParams()
 

@@ -5,12 +5,12 @@ const handleChange = (e) => {
   console.log(e.target.value)
 }
 
+// component not yet in use
 const UpdateReportToData = () => {
   useEffect(() => {
     const getData = async () => {
       const querySnapshot = await getDocs(collection(db, 'users'))
       querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
         console.log(doc.id, ' => ', doc.data())
       })
     }

@@ -22,8 +22,6 @@ function NoteEdit() {
     return item
   })
 
-  console.log(test)
-
   const [formData, setFormData] = useState({
     noteText: '',
     edited: true,
@@ -107,7 +105,6 @@ function NoteEdit() {
           type="text"
           id="noteText"
           placeholder="Enter Note"
-          // onChange={onChange}
           value={noteText}
         ></textarea>
         <button className="edit-button" type="submit">
