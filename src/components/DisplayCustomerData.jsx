@@ -104,7 +104,7 @@ function DisplayCustomerData({ setCustomer, customer }) {
             Date Of Signup <span>{data.fullData.dateOfSignUp} </span>
           </p>
           <p className="profile-extra-info">
-            Sign Up Agent
+            Sign Up Agent 
             <span>
               {data.fullData.signUpagent ? data.fullData.signUpagent : 'System'}
             </span>
@@ -130,7 +130,7 @@ function DisplayCustomerData({ setCustomer, customer }) {
           </p>
         </div>
 
-        {/* to be updated */}
+    
         {/* <UpdateReportToData /> */}
         <ProfileControlButtons />
       </div>

@@ -130,6 +130,9 @@ function DisplayOrders() {
       // Delete the actual order document from the database
       await deleteDoc(doc(db, 'orders', id))
 
+      // to do update the state: -->
+      dispatch({ type: 'SET_STATS', payload: updatedStats })
+
       toast.success('Order deleted successfully')
     } catch (error) {
       console.error('Error deleting order: ', error)
@@ -186,10 +189,17 @@ function DisplayOrders() {
       // this getStatsObj to get the  UID index to update the document with
       const getStatsObj = await getStatsObjToEdit('stats', initCustId)
 
+      console.log(initCustId)
+      console.log(getStatsObj)
+
+      // return
+
       const statsID = getStatsObj[0].id
 
       let sum = totalAmountSpent + parseInt(price)
       console.log(sum)
+      // return
+
       let points = 0
       let goldCustomer = false
       let rating = 0
@@ -211,6 +221,8 @@ function DisplayOrders() {
         rating: ratingAmount,
       }
 
+      console.log(updatedStats)
+
       // sum up batch updates
       dispatch({ type: 'ORDERS', payload: data })
       dispatch({
@@ -219,10 +231,18 @@ function DisplayOrders() {
       })
       dispatch({ type: 'ORDERS_LENGTH', payload: data.length })
 
-      // const sendUpdatedStatsData = updateCustomerStats('stats', statsID, updatedStats)
+      const sendUpdatedStatsData = await updateCustomerStats(
+        'stats',
+        statsID,
+        updatedStats
+      )
+      console.log(sendUpdatedStatsData)
       const getUpdStatsObj = await getStatsObjToEdit('stats', initCustId)
       console.log(getUpdStatsObj)
+      console.log(getUpdStatsObj[0].data)
+      // return
 
+      // set the global state
       dispatch({ type: 'SET_STATS', payload: getUpdStatsObj[0].data })
 
       setFormData({

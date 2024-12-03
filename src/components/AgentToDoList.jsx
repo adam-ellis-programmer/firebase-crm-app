@@ -157,6 +157,8 @@ function AgentToDoList() {
   }
 
   const handleTaskDelete = async (id) => {
+    console.log(id)
+    // return
     await deleteDoc(doc(db, 'tasks', id))
     const updatedData = tasks.filter((item) => item.id !== id)
     setTasks(updatedData)

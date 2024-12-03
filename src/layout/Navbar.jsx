@@ -78,7 +78,9 @@ function Navbar({ setToggleNav, toggleNav }) {
       <div className="nav-bar-container">
 
         <div className="logo-box testing">
+          <Link to="/">
           <Logo className='logo' />
+          </Link>
         </div>
         <ul className="nav-ul">
           <NavItem setToggleNav={setToggleNav} toggleNav={toggleNav} />

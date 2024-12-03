@@ -19,6 +19,7 @@ import SendEmail from '../drop down modals/SendEmail'
 import { addMsgToDatabase } from '../crm context/CrmAction'
 import ProgressBar from '../components/ProgressBar'
 import DetailsPageStats from '../components/DetailsPageStats'
+import Loader from '../assets/Loader'
 // CONVERT NUMBERS INTO MONEY FUNCTION
 // CONVERT NUMBERS INTO MONEY FUNCTION
 // CONVERT NUMBERS INTO MONEY FUNCTION
@@ -31,7 +32,7 @@ function SingleCustomer() {
 
   const [customer, setCustomer] = useState(null)
   const [testing, setTesting] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [shareLinkCopied, setShareLinkCopied] = useState(false)
   const navigate = useNavigate()
   const params = useParams()
@@ -50,6 +51,7 @@ function SingleCustomer() {
       }
     }
 
+    // try / catch and finally to set loader 0
     fetchData()
   }, [navigate, params.uid])
 
@@ -67,6 +69,10 @@ function SingleCustomer() {
     }
   })
   // console.log(customer?.urlData.url)
+
+  if (loading) {
+    return <Loader />
+  }
 
   return (
     <>

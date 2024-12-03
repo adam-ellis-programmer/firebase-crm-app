@@ -1,9 +1,12 @@
 import CrmContext from '../crm context/CrmContext'
-import { useContext } from 'react'
+import { useEffect, useState, useContext } from 'react'
 const DetailsPageStats = () => {
   const { dispatch, customerStats } = useContext(CrmContext)
+  // console.log(customerStats)
 
   const { points, rating, goldCustomer } = customerStats || {}
+
+  //   console.log(customerStats)
 
   return (
     <div className="details-page-stats-wrap">
